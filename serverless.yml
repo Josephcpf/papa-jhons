@@ -12,16 +12,31 @@ functions:
 
   createOrder:
     handler: src/Orders/createOrder.handler
+    events:
+      - httpApi:
+          path: /orders
+          method: post
 
   getOrder:
     handler: src/Orders/getOrder.handler
+    events:
+      - httpApi:
+          path: /orders/{orderId}
+          method: get
 
   getOrderStatus:
     handler: src/Orders/getOrderStatus.handler
+    events:
+      - httpApi:
+          path: /orders/{orderId}/status
+          method: get
 
   updateOrderStatus:
     handler: src/Orders/updateOrderStatus.handler
-
+    events:
+      - httpApi:
+          path: /orders/{orderId}/status
+          method: put
 resources:
   Resources:
 
