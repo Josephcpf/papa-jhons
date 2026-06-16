@@ -1,0 +1,109 @@
+service: papa-johns-backend
+
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: python3.12
+  region: us-east-1
+
+  iam:
+    role:
+      statements:
+
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:GetItem
+            - dynamodb:UpdateItem
+            - dynamodb:Query
+          Resource:
+            - !GetAtt OrdersTable.Arn
+            - !GetAtt OrderHistoryTable.Arn
+
+functions:
+
+  createOrder:
+    handler: src/orders/create.handler
+    events:
+      - httpApi:
+          path: /orders
+          method: post
+
+  getOrder:
+    handler: src/orders/get.handler
+    events:
+      - httpApi:
+          path: /orders/{orderId}
+          method: get
+
+  getOrderStatus:
+    handler: src/orders/get_status.handler
+    events:
+      - httpApi:
+          path: /orders/{orderId}/status
+          method: get
+
+  updateOrderStatus:
+    handler: src/orders/update_status.handler
+    events:
+      - httpApi:
+          path: /orders/{orderId}/status
+          method: put
+
+resources:
+  Resources:
+
+    OrdersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Orders
+        BillingMode: PAY_PER_REQUEST
+
+        AttributeDefinitions:
+          - AttributeName: tenant_id
+            AttributeType: S
+
+          - AttributeName: order_id
+            AttributeType: S
+
+        KeySchema:
+          - AttributeName: tenant_id
+            KeyType: HASH
+
+          - AttributeName: order_id
+            KeyType: RANGE
+
+    OrderHistoryTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: OrderHistory
+        BillingMode: PAY_PER_REQUEST
+
+        AttributeDefinitions:
+          - AttributeName: order_id
+            AttributeType: S
+
+          - AttributeName: event_time
+            AttributeType: S
+
+        KeySchema:
+          - AttributeName: order_id
+            KeyType: HASH
+
+          - AttributeName: event_time
+            KeyType: RANGE
+
+    WorkersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Workers
+        BillingMode: PAY_PER_REQUEST
+
+        AttributeDefinitions:
+          - AttributeName: worker_id
+            AttributeType: S
+
+        KeySchema:
+          - AttributeName: worker_id
+            KeyType: HASH
