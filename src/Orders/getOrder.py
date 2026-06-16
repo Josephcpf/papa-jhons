@@ -1,6 +1,13 @@
 import json
 
+from decimal import Decimal
 from src.shared.dynamodb import ORDERS_TABLE
+
+
+def decimal_default(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)
+    raise TypeError
 
 
 def handler(event, context):
@@ -26,5 +33,5 @@ def handler(event, context):
 
     return {
         "statusCode": 200,
-        "body": json.dumps(item)
+        "body": json.dumps(item, default=decimal_default)
     }
