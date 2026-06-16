@@ -11,32 +11,16 @@ provider:
 functions:
 
   createOrder:
-    handler: src/orders/create.handler
-    events:
-      - httpApi:
-          path: /orders
-          method: post
+    handler: src/Orders/createOrder.handler
 
   getOrder:
-    handler: src/orders/get.handler
-    events:
-      - httpApi:
-          path: /orders/{orderId}
-          method: get
+    handler: src/Orders/getOrder.handler
 
   getOrderStatus:
-    handler: src/orders/get_status.handler
-    events:
-      - httpApi:
-          path: /orders/{orderId}/status
-          method: get
+    handler: src/Orders/getOrderStatus.handler
 
   updateOrderStatus:
-    handler: src/orders/update_status.handler
-    events:
-      - httpApi:
-          path: /orders/{orderId}/status
-          method: put
+    handler: src/Orders/updateOrderStatus.handler
 
 resources:
   Resources:
