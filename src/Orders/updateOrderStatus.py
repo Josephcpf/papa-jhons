@@ -1,10 +1,13 @@
 import json
+import boto3
 from datetime import datetime
 
 from src.shared.dynamodb import (
     ORDERS_TABLE,
     HISTORY_TABLE
 )
+
+events = boto3.client("events")
 
 
 def handler(event, context):
@@ -15,6 +18,9 @@ def handler(event, context):
 
     new_status = body["status"]
 
+    timestamp = datetime.utcnow().isoformat()
+
+    # Actualizar pedido
     ORDERS_TABLE.update_item(
         Key={
             "tenant_id": "PAPAJOHNS",
@@ -29,16 +35,33 @@ def handler(event, context):
         },
         ExpressionAttributeValues={
             ":status": new_status,
-            ":updated_at": datetime.utcnow().isoformat()
+            ":updated_at": timestamp
         }
     )
 
+    # Guardar historial
     HISTORY_TABLE.put_item(
         Item={
             "order_id": order_id,
-            "event_time": datetime.utcnow().isoformat(),
+            "event_time": timestamp,
             "status": new_status
         }
+    )
+
+    # Publicar evento en EventBridge
+    events.put_events(
+        Entries=[
+            {
+                "Source": "orders.service",
+                "DetailType": "OrderStatusChanged",
+                "EventBusName": "PapaJohnsEventBus",
+                "Detail": json.dumps({
+                    "orderId": order_id,
+                    "status": new_status,
+                    "timestamp": timestamp
+                })
+            }
+        ]
     )
 
     return {
