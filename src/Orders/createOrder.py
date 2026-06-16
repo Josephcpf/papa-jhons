@@ -1,6 +1,7 @@
 import json
 import boto3
 import uuid
+from decimal import Decimal
 from datetime import datetime
 
 dynamodb = boto3.resource("dynamodb")
@@ -18,7 +19,7 @@ def handler(event, context):
         "customer_id": body["customer_id"],
         "status": "CREATED",
         "source": body["source"],
-        "total": body["total"],
+        "total": Decimal(str(body["total"])),
         "created_at": datetime.utcnow().isoformat()
     }
 
