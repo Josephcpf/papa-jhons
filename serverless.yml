@@ -39,6 +39,11 @@ functions:
           method: put
 resources:
   Resources:
+  
+    PapaJohnsEventBus:
+      Type: AWS::Events::EventBus
+      Properties:
+        Name: PapaJohnsEventBus
 
     OrdersTable:
       Type: AWS::DynamoDB::Table
