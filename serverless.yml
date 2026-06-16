@@ -9,17 +9,6 @@ provider:
 
   iam:
     role: arn:aws:iam::944585571319:role/LabRole
-      statements:
-
-        - Effect: Allow
-          Action:
-            - dynamodb:PutItem
-            - dynamodb:GetItem
-            - dynamodb:UpdateItem
-            - dynamodb:Query
-          Resource:
-            - !GetAtt OrdersTable.Arn
-            - !GetAtt OrderHistoryTable.Arn
 
 functions:
 
