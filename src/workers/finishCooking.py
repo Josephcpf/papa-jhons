@@ -9,13 +9,13 @@ def handler(event, context):
 
     update_order_status(
         order_id,
-        "COOKING"
+        "READY_FOR_PACKING"
     )
 
     return {
         "statusCode": 200,
         "body": json.dumps({
             "order_id": order_id,
-            "status": "COOKING"
+            "status": "READY_FOR_PACKING"
         })
     }
