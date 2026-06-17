@@ -37,6 +37,48 @@ functions:
       - httpApi:
           path: /orders/{orderId}/status
           method: put
+          
+  startCooking:
+    handler: src/workers/startCooking.handler
+    events:
+      - httpApi:
+          path: /workers/orders/{orderId}/start-cooking
+          method: post
+
+  finishCooking:
+    handler: src/workers/finishCooking.handler
+    events:
+      - httpApi:
+          path: /workers/orders/{orderId}/finish-cooking
+          method: post
+
+  startPacking:
+    handler: src/workers/startPacking.handler
+    events:
+      - httpApi:
+          path: /workers/orders/{orderId}/start-packing
+          method: post
+
+  finishPacking:
+    handler: src/workers/finishPacking.handler
+    events:
+      - httpApi:
+          path: /workers/orders/{orderId}/finish-packing
+          method: post
+
+  startDelivery:
+    handler: src/workers/startDelivery.handler
+    events:
+      - httpApi:
+          path: /workers/orders/{orderId}/start-delivery
+          method: post
+
+  finishDelivery:
+    handler: src/workers/finishDelivery.handler
+    events:
+      - httpApi:
+          path: /workers/orders/{orderId}/finish-delivery
+          method: post
 resources:
   Resources:
   
