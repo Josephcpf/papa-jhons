@@ -7,27 +7,24 @@ def handler(event, context):
 
     order_id = event["pathParameters"]["orderId"]
 
-    response = ORDERS_TABLE.get_item(
+    ORDERS_TABLE.update_item(
         Key={
             "tenant_id": "PAPAJOHNS",
             "order_id": order_id
+        },
+        UpdateExpression="SET #status = :status",
+        ExpressionAttributeNames={
+            "#status": "status"
+        },
+        ExpressionAttributeValues={
+            ":status": "COOKING"
         }
     )
-
-    item = response.get("Item")
-
-    if not item:
-        return {
-            "statusCode": 404,
-            "body": json.dumps({
-                "message": "Order not found"
-            })
-        }
 
     return {
         "statusCode": 200,
         "body": json.dumps({
             "order_id": order_id,
-            "status": item["status"]
+            "status": "COOKING"
         })
     }
