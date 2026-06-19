@@ -11,6 +11,13 @@ provider:
 functions:
   saveTaskToken:
     handler: src/workers/saveTaskToken.handler
+    
+  getDashboardSummary:
+    handler: src/dashboard/getSummary.handler
+    events:
+      - httpApi:
+          path: /dashboard/summary
+          method: get
 
   createOrder:
     handler: src/orders/createOrder.handler
