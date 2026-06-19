@@ -37,7 +37,7 @@ functions:
       - httpApi:
           path: /orders/{orderId}/status
           method: put
-          
+
   startCooking:
     handler: src/workers/startCooking.handler
     events:
@@ -79,9 +79,10 @@ functions:
       - httpApi:
           path: /workers/orders/{orderId}/finish-delivery
           method: post
+
 resources:
   Resources:
-  
+
     PapaJohnsEventBus:
       Type: AWS::Events::EventBus
       Properties:
@@ -96,14 +97,12 @@ resources:
         AttributeDefinitions:
           - AttributeName: tenant_id
             AttributeType: S
-
           - AttributeName: order_id
             AttributeType: S
 
         KeySchema:
           - AttributeName: tenant_id
             KeyType: HASH
-
           - AttributeName: order_id
             KeyType: RANGE
 
@@ -116,14 +115,12 @@ resources:
         AttributeDefinitions:
           - AttributeName: order_id
             AttributeType: S
-
           - AttributeName: event_time
             AttributeType: S
 
         KeySchema:
           - AttributeName: order_id
             KeyType: HASH
-
           - AttributeName: event_time
             KeyType: RANGE
 
@@ -140,6 +137,7 @@ resources:
         KeySchema:
           - AttributeName: worker_id
             KeyType: HASH
+
     TaskTokensTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -148,8 +146,8 @@ resources:
 
         AttributeDefinitions:
           - AttributeName: order_id
-          AttributeType: S
+            AttributeType: S
 
         KeySchema:
-        - AttributeName: order_id
-          KeyType: HASH
+          - AttributeName: order_id
+            KeyType: HASH
