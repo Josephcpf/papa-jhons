@@ -22,4 +22,3 @@ def handler(event, context):
             "status": new_status
         })
     }
-    }
