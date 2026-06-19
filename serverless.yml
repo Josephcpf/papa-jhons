@@ -9,6 +9,8 @@ provider:
     role: arn:aws:iam::944585571319:role/LabRole
 
 functions:
+  saveTaskToken:
+    handler: src/workers/saveTaskToken.handler
 
   createOrder:
     handler: src/orders/createOrder.handler
