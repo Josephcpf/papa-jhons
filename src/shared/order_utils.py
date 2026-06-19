@@ -2,10 +2,7 @@ import json
 import boto3
 from datetime import datetime
 
-from src.shared.dynamodb import (
-    ORDERS_TABLE,
-    HISTORY_TABLE
-)
+from src.shared.dynamodb import ORDERS_TABLE, HISTORY_TABLE
 
 events = boto3.client("events")
 
@@ -13,6 +10,16 @@ events = boto3.client("events")
 def update_order_status(order_id, new_status):
 
     timestamp = datetime.utcnow().isoformat()
+
+    order_response = ORDERS_TABLE.get_item(
+        Key={
+            "tenant_id": "PAPAJOHNS",
+            "order_id": order_id
+        }
+    )
+
+    order = order_response.get("Item", {})
+    source = order.get("source", "UNKNOWN")
 
     ORDERS_TABLE.update_item(
         Key={
@@ -49,6 +56,7 @@ def update_order_status(order_id, new_status):
                 "Detail": json.dumps({
                     "orderId": order_id,
                     "status": new_status,
+                    "source": source,
                     "timestamp": timestamp
                 })
             }
