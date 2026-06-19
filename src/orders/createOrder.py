@@ -1,13 +1,16 @@
+import json
 import boto3
 import uuid
+from decimal import Decimal
 from datetime import datetime
 
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table("Orders")
 
+
 def handler(event, context):
 
-    body = event["body"]
+    body = json.loads(event["body"])
 
     order_id = str(uuid.uuid4())
 
@@ -17,15 +20,17 @@ def handler(event, context):
         "customer_id": body["customer_id"],
         "status": "CREATED",
         "source": body["source"],
-        "total": body["total"],
+        "total": Decimal(str(body["total"])),
         "created_at": datetime.utcnow().isoformat()
     }
 
     table.put_item(Item=item)
 
     return {
-        "statusCode": 200,
-        "body": {
-            "order_id": order_id
-        }
+        "statusCode": 201,
+        "body": json.dumps({
+            "order_id": order_id,
+            "status": "CREATED",
+            "source": body["source"]
+        })
     }
