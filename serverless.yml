@@ -18,6 +18,8 @@ functions:
       - httpApi:
           path: /dashboard/summary
           method: get
+  notifyRappi:
+    handler: src/notifications/notifyRappi.handler
 
   createOrder:
     handler: src/orders/createOrder.handler
