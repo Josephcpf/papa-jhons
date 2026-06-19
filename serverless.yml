@@ -140,3 +140,16 @@ resources:
         KeySchema:
           - AttributeName: worker_id
             KeyType: HASH
+    TaskTokensTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: TaskTokens
+        BillingMode: PAY_PER_REQUEST
+
+        AttributeDefinitions:
+          - AttributeName: order_id
+          AttributeType: S
+
+        KeySchema:
+        - AttributeName: order_id
+          KeyType: HASH
