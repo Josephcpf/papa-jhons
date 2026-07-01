@@ -17,6 +17,10 @@ def handler(event, context):
     order_id = str(uuid.uuid4())
     timestamp = datetime.utcnow().isoformat()
 
+    has_drink = body.get("has_drink", False)
+    has_appetizer = body.get("has_appetizer", False)
+    items = body.get("items", [])
+
     item = {
         "tenant_id": "PAPAJOHNS",
         "order_id": order_id,
@@ -24,6 +28,9 @@ def handler(event, context):
         "status": "CREATED",
         "source": body["source"],
         "total": Decimal(str(body["total"])),
+        "has_drink": has_drink,
+        "has_appetizer": has_appetizer,
+        "items": items,
         "created_at": timestamp
     }
 
@@ -40,6 +47,8 @@ def handler(event, context):
                     "customerId": body["customer_id"],
                     "source": body["source"],
                     "status": "CREATED",
+                    "has_drink": has_drink,
+                    "has_appetizer": has_appetizer,
                     "timestamp": timestamp
                 })
             }
@@ -51,6 +60,8 @@ def handler(event, context):
         "body": json.dumps({
             "order_id": order_id,
             "status": "CREATED",
-            "source": body["source"]
+            "source": body["source"],
+            "has_drink": has_drink,
+            "has_appetizer": has_appetizer
         })
     }
