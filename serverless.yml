@@ -11,15 +11,23 @@ provider:
 functions:
   saveTaskToken:
     handler: src/workers/saveTaskToken.handler
-    
+
   getDashboardSummary:
     handler: src/dashboard/getSummary.handler
     events:
       - httpApi:
           path: /dashboard/summary
           method: get
+
   notifyRappi:
     handler: src/notifications/notifyRappi.handler
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - RappiNotificationsQueue
+              - Arn
+          batchSize: 1
 
   createOrder:
     handler: src/orders/createOrder.handler
@@ -162,3 +170,40 @@ resources:
         KeySchema:
           - AttributeName: order_id
             KeyType: HASH
+
+    RappiNotificationsDLQ:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: RappiNotificationsDLQ
+
+    RappiNotificationsQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: RappiNotificationsQueue
+        VisibilityTimeout: 30
+        RedrivePolicy:
+          deadLetterTargetArn:
+            Fn::GetAtt:
+              - RappiNotificationsDLQ
+              - Arn
+          maxReceiveCount: 3
+
+    RappiNotificationsQueuePolicy:
+      Type: AWS::SQS::QueuePolicy
+      Properties:
+        Queues:
+          - Ref: RappiNotificationsQueue
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: events.amazonaws.com
+              Action: sqs:SendMessage
+              Resource:
+                Fn::GetAtt:
+                  - RappiNotificationsQueue
+                  - Arn
+              Condition:
+                ArnEquals:
+                  aws:SourceArn: arn:aws:events:us-east-1:944585571319:rule/PapaJohnsEventBus/NotifyRappiRule
