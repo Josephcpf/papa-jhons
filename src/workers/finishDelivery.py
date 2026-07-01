@@ -11,6 +11,12 @@ def handler(event, context):
 
     order_id = event["pathParameters"]["orderId"]
 
+    body = {}
+    if event.get("body"):
+        body = json.loads(event["body"])
+
+    worker_id = body.get("worker_id", "DRIVER_001")
+
     response = TASKTOKENS_TABLE.get_item(
         Key={
             "order_id": order_id
@@ -31,7 +37,9 @@ def handler(event, context):
 
     update_order_status(
         order_id,
-        "DELIVERED"
+        "DELIVERED",
+        worker_id=worker_id,
+        role="DRIVER"
     )
 
     stepfunctions.send_task_success(
@@ -47,6 +55,8 @@ def handler(event, context):
         "body": json.dumps({
             "order_id": order_id,
             "status": "DELIVERED",
+            "worker_id": worker_id,
+            "role": "DRIVER",
             "message": "Delivery finished and workflow completed"
         })
     }
