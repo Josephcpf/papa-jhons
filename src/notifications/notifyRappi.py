@@ -1,9 +1,9 @@
 import json
 
 
-def handler(event, context):
+def process_event(event):
 
-    print("Event received from EventBridge:")
+    print("Event received:")
     print(json.dumps(event))
 
     detail = event.get("detail", {})
@@ -11,27 +11,33 @@ def handler(event, context):
     order_id = detail.get("orderId") or detail.get("order_id")
     status = detail.get("status")
     source = detail.get("source", "UNKNOWN")
+    timestamp = detail.get("timestamp")
 
     if source != "RAPPI":
         print("Order is not from RAPPI. Notification skipped.")
+        return
 
-        return {
-            "statusCode": 200,
-            "body": json.dumps({
-                "message": "Notification skipped",
-                "reason": "Order source is not RAPPI",
-                "order_id": order_id,
-                "status": status
-            })
-        }
+    print(
+        f"Sending notification to Rappi API for order {order_id} "
+        f"with status {status} at {timestamp}"
+    )
 
-    print(f"Sending notification to Rappi API for order {order_id} with status {status}")
+
+def handler(event, context):
+
+    print("Raw event received:")
+    print(json.dumps(event))
+
+    if "Records" in event:
+        for record in event["Records"]:
+            body = json.loads(record["body"])
+            process_event(body)
+    else:
+        process_event(event)
 
     return {
         "statusCode": 200,
         "body": json.dumps({
-            "message": "Rappi notification simulated",
-            "order_id": order_id,
-            "status": status
+            "message": "Rappi notification processing completed"
         })
     }
