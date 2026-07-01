@@ -12,6 +12,15 @@ functions:
   saveTaskToken:
     handler: src/workers/saveTaskToken.handler
 
+  verifyMainItemReady:
+    handler: src/extras/verifyMainItemReady.handler
+
+  prepareDrink:
+    handler: src/extras/prepareDrink.handler
+
+  prepareAppetizer:
+    handler: src/extras/prepareAppetizer.handler
+
   getDashboardSummary:
     handler: src/dashboard/getSummary.handler
     events:
