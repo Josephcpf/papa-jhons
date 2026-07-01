@@ -7,7 +7,7 @@ from src.shared.dynamodb import ORDERS_TABLE, HISTORY_TABLE
 events = boto3.client("events")
 
 
-def update_order_status(order_id, new_status):
+def update_order_status(order_id, new_status, worker_id=None, role=None):
 
     timestamp = datetime.utcnow().isoformat()
 
@@ -39,13 +39,32 @@ def update_order_status(order_id, new_status):
         }
     )
 
-    HISTORY_TABLE.put_item(
-        Item={
-            "order_id": order_id,
-            "event_time": timestamp,
-            "status": new_status
-        }
-    )
+    history_item = {
+        "order_id": order_id,
+        "event_time": timestamp,
+        "status": new_status
+    }
+
+    if worker_id:
+        history_item["worker_id"] = worker_id
+
+    if role:
+        history_item["role"] = role
+
+    HISTORY_TABLE.put_item(Item=history_item)
+
+    event_detail = {
+        "orderId": order_id,
+        "status": new_status,
+        "source": source,
+        "timestamp": timestamp
+    }
+
+    if worker_id:
+        event_detail["workerId"] = worker_id
+
+    if role:
+        event_detail["role"] = role
 
     events.put_events(
         Entries=[
@@ -53,12 +72,7 @@ def update_order_status(order_id, new_status):
                 "Source": "orders.service",
                 "DetailType": "OrderStatusChanged",
                 "EventBusName": "PapaJohnsEventBus",
-                "Detail": json.dumps({
-                    "orderId": order_id,
-                    "status": new_status,
-                    "source": source,
-                    "timestamp": timestamp
-                })
+                "Detail": json.dumps(event_detail)
             }
         ]
     )
