@@ -21,6 +21,9 @@ def handler(event, context):
     has_appetizer = body.get("has_appetizer", False)
     items = body.get("items", [])
 
+    # DELIVERY, PICKUP o DINE_IN
+    fulfillment_type = body.get("fulfillment_type", "DELIVERY")
+
     item = {
         "tenant_id": "PAPAJOHNS",
         "order_id": order_id,
@@ -30,6 +33,7 @@ def handler(event, context):
         "total": Decimal(str(body["total"])),
         "has_drink": has_drink,
         "has_appetizer": has_appetizer,
+        "fulfillment_type": fulfillment_type,
         "items": items,
         "created_at": timestamp
     }
@@ -49,6 +53,7 @@ def handler(event, context):
                     "status": "CREATED",
                     "has_drink": has_drink,
                     "has_appetizer": has_appetizer,
+                    "fulfillment_type": fulfillment_type,
                     "timestamp": timestamp
                 })
             }
@@ -62,6 +67,7 @@ def handler(event, context):
             "status": "CREATED",
             "source": body["source"],
             "has_drink": has_drink,
-            "has_appetizer": has_appetizer
+            "has_appetizer": has_appetizer,
+            "fulfillment_type": fulfillment_type
         })
     }
