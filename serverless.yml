@@ -94,6 +94,9 @@ functions:
           path: /workers/orders/{orderId}/finish-packing
           method: post
 
+  readyForCustomer:
+    handler: src/workers/readyForCustomer.handler
+
   startDelivery:
     handler: src/workers/startDelivery.handler
     events:
